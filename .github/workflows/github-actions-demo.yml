@@ -1,36 +1,22 @@
-name:  Deploy static website to GitHub Pages
+name: deploy to cloudflare
 
 on:
   push:
-    branches:
-      - main  # se ejecuta cuando haces push a la rama principal
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
+    branches: [ main ]
 
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-
     steps:
-      - name: 📂 Checkout repository
-        uses: actions/checkout@v4
-
-      - name: 📦 Upload static files
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/checkout@v4
+      - name: Build (opcional)
+        run: echo "Hacer algo como un test"
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
         with:
-          path: ./  # cambia esto si tu sitio está en otra carpeta (por ejemplo ./dist)
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: actions-to-cloudflare
+          directory: ./
+      - name: Mensaje de despliegue  
+        run: echo "SE desplego la pagina!!!"
